@@ -63,8 +63,14 @@ class SudoHelperLoggingTest(unittest.TestCase):
                 connection.connect(str(helper_socket))
                 request_fds = [os.open(os.devnull, os.O_RDWR) for _ in range(3)]
                 try:
+                    request = {
+                        "argv": ["/usr/bin/true", secret],
+                        "env": {},
+                        "cwd": self.temp_dir.name,
+                        "tty_fds": [],
+                    }
                     connection.sendmsg(
-                        [json.dumps({"argv": ["/usr/bin/true", secret], "env": {}, "tty_fds": []}).encode()],
+                        [json.dumps(request).encode()],
                         [(socket.SOL_SOCKET, socket.SCM_RIGHTS, array.array("i", request_fds))],
                     )
                 finally:
